@@ -5,12 +5,32 @@ from register_app.models import CustomUser
 
 class RegisterSerializer(serializers.ModelSerializer):
     fullname = serializers.CharField() 
-    repeated_password = serializers.CharField(min_length=10, write_only=True) 
+    repeated_password = serializers.CharField(write_only=True) 
 
 
     class Meta:
         model = User
         fields = ["fullname", "email", "password", "repeated_password"]
+
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(detail="A user with this email already exist!")
+        return value
+
+
+    def validate_password(self, value):
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError(detail="Password must at least 10 characters long!")
+        if len(value.strip()) > 30:
+            raise serializers.ValidationError(detail="The password must not be longer than 30 characters!")
+        return value.strip()    
+
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["repeated_password"]:
+            raise serializers.ValidationError({"repeated_password": "Passwords must match!"})
+        return attrs
 
 
     def create(self, validated_data):
