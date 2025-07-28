@@ -4,7 +4,7 @@ from register_app.models import CustomUser
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    fullname = serializers.CharField() 
+    fullname = serializers.CharField(min_length=3, max_length=20) 
     repeated_password = serializers.CharField(write_only=True) 
 
 
@@ -29,7 +29,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs["password"] != attrs["repeated_password"]:
-            raise serializers.ValidationError({"repeated_password": "Passwords must match!"})
+            raise serializers.ValidationError(detail="Passwords must match!")
         return attrs
 
 
