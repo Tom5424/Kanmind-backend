@@ -2,14 +2,23 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
-from .serializers import BoardCreateSerializer
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+from django.db.models import Q
+from .serializers import BoardCreateSerializer, BoardListSerializer
+from boards_app.models import Board
 
 
 class BoardListCreateView(APIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
-    
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+
+
+    def get(self, request):
+        user = request.user
+        boards = Board.objects.filter(Q(owner_id=user.id) | Q(members=user)).distinct()
+        serializer = BoardListSerializer(boards, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
     def post(self, request):
         serializer = BoardCreateSerializer(data=request.data, context={"request": request})
