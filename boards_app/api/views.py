@@ -6,7 +6,7 @@ from rest_framework.authentication import TokenAuthentication, SessionAuthentica
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from .serializers import BoardCreateSerializer, BoardListSerializer, BoardDetailSerializer, BoardUpdateSerializer
-from .permissions import IsBoardOwnerOrMember
+from .permissions import IsBoardOwnerOrMember, IsBoardOwner
 from boards_app.models import Board
 
 
@@ -30,8 +30,14 @@ class BoardListCreateView(APIView):
     
 
 class BoardDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBoardOwnerOrMember]
+    permission_classes = [IsAuthenticated, IsBoardOwnerOrMember, IsBoardOwner]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
+
+
+    def get_permissions(self):
+        if self.request.method == "DELETE":
+            return [IsAuthenticated(), IsBoardOwner()]
+        return [IsAuthenticated(), IsBoardOwnerOrMember()]
 
 
     def get(self, request, board_id):
@@ -48,3 +54,10 @@ class BoardDetailView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+    def delete(self, request, board_id):
+        board = get_object_or_404(Board, id=board_id)
+        self.check_object_permissions(request=request, obj=board)
+        board.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)   
