@@ -93,3 +93,32 @@ class BoardDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = ["id", "title", "owner_id", "members"]
+
+
+
+class BoardUpdateSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(required=False)
+    members = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True, many=True, error_messages={"does_not_exist": "1 or more users dont exist!"})
+    owner_data = BoardMemberListSerializer(source="owner_id", read_only=True)
+    members_data = BoardMemberListSerializer(source="members", many=True, read_only=True)
+
+
+    class Meta:
+        model = Board
+        fields = ["id", "title", "owner_data", "members_data", "members"]
+
+
+    def validate_members(self, value):
+        members = value
+        if len(members) == 0:
+            raise serializers.ValidationError("At least 1 member must be specified!")
+        return value
+
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        members = validated_data.get("members", instance.members)
+        if members is not None:
+            instance.members.set(members)
+        instance.save()
+        return instance
