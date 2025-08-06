@@ -70,3 +70,26 @@ class BoardListSerializer(serializers.ModelSerializer):
 
     def get_tasks_high_prio_count(self, obj):
         return 0
+
+
+class BoardMemberListSerializer(serializers.ModelSerializer):
+    fullname = serializers.SerializerMethodField()
+    
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "fullname"]
+
+
+    def get_fullname(self, obj):
+        return obj.customuser.fullname
+
+
+class BoardDetailSerializer(serializers.ModelSerializer):
+    owner_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    members = BoardMemberListSerializer(many=True)
+
+
+    class Meta:
+        model = Board
+        fields = ["id", "title", "owner_id", "members"]
