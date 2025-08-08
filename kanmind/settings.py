@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'register_app',
     'boards_app',
+    'check_email_app',
 ]
 
 MIDDLEWARE = [
