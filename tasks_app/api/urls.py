@@ -1,7 +1,7 @@
-# from django.urls import path
-# from .views import EmailCheckView 
+from django.urls import path
+from .views import TaskCreateView 
 
 
-# urlpatterns = [
-#     path("email-check/", EmailCheckView.as_view(), name="email-check"),
-# ]
+urlpatterns = [
+    path("tasks/", TaskCreateView.as_view(), name="task-create-view"),
+]

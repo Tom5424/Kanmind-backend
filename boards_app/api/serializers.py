@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from boards_app.models import Board
+from tasks_app.api.serializers import TaskCreateListSerializer
 
 
 class BoardCreateSerializer(serializers.ModelSerializer):
@@ -49,6 +50,7 @@ class BoardListSerializer(serializers.ModelSerializer):
     ticket_count = serializers.SerializerMethodField()
     tasks_to_do_count = serializers.SerializerMethodField()
     tasks_high_prio_count = serializers.SerializerMethodField()
+    ### Must Check the task, if can they exist
 
 
     class Meta:
@@ -88,12 +90,12 @@ class BoardMemberListSerializer(serializers.ModelSerializer):
 class BoardDetailSerializer(serializers.ModelSerializer):
     owner_id = serializers.PrimaryKeyRelatedField(read_only=True)
     members = BoardMemberListSerializer(many=True)
+    tasks = TaskCreateListSerializer(many=True)
 
 
     class Meta:
         model = Board
-        fields = ["id", "title", "owner_id", "members"]
-
+        fields = ["id", "title", "owner_id", "members", "tasks"]
 
 
 class BoardUpdateSerializer(serializers.ModelSerializer):
@@ -101,6 +103,7 @@ class BoardUpdateSerializer(serializers.ModelSerializer):
     members = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True, many=True, error_messages={"does_not_exist": "1 or more users dont exist!"})
     owner_data = BoardMemberListSerializer(source="owner_id", read_only=True)
     members_data = BoardMemberListSerializer(source="members", many=True, read_only=True)
+    ### Must Check the task, if can they exist
 
 
     class Meta:
