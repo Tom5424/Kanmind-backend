@@ -52,7 +52,7 @@ class TaskCreateListSerializer(serializers.ModelSerializer):
         return task
 
 
-class TaskAssignedOrReviewingSerializer(serializers.ModelSerializer):
+class TaskAssignedOrReviewingListSerializer(serializers.ModelSerializer):
     assignee = TaskAssigneeAndReviewerSerializer(source="assignee_id", read_only=True)
     reviewer = TaskAssigneeAndReviewerSerializer(source="reviewer_id", read_only=True)
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
