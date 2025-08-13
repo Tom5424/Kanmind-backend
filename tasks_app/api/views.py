@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-from .serializers import TaskCreateListSerializer, TaskListAssignedToMeSerializer 
+from .serializers import TaskCreateListSerializer, TaskAssignedOrReviewingSerializer 
 from .permissions import IsBoardOwnerOrMember
 from tasks_app.models import Task
 
@@ -28,5 +28,17 @@ class TaskAssignedToMeListView(APIView):
     def get(self, request):
         user = request.user
         tasks = Task.objects.filter(assignee_id=user.id)
-        serializer = TaskListAssignedToMeSerializer(tasks, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)    
+        serializer = TaskAssignedOrReviewingSerializer(tasks, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class TaskReviewingListView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+
+
+    def get(self, request):
+        user = request.user
+        tasks = Task.objects.filter(reviewer_id=user.id)
+        serializer = TaskAssignedOrReviewingSerializer(tasks, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)            
