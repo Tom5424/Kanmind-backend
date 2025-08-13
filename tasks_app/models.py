@@ -11,8 +11,8 @@ class Task(models.Model):
     description = models.TextField(max_length=250)
     status = models.CharField(choices=status)
     priority = models.CharField(choices=priority)
-    assignee_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="assigned")
-    reviewer_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="reviewer")
+    assignee_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned")
+    reviewer_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewer")
     due_date = models.DateField(default=timezone.now)
 
 

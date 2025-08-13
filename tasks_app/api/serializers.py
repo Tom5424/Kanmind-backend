@@ -50,3 +50,21 @@ class TaskCreateListSerializer(serializers.ModelSerializer):
             reviewer = None
         task = Task.objects.create(board=board, assignee_id=assignee, reviewer_id=reviewer, **validated_data)
         return task
+
+
+class TaskListAssignedToMeSerializer (serializers.ModelSerializer):
+    assignee = TaskAssigneeAndReviewerSerializer(source="assignee_id", read_only=True)
+    reviewer = TaskAssigneeAndReviewerSerializer(source="reviewer_id", read_only=True)
+    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
+    status = serializers.ChoiceField(choices=status, error_messages={"invalid_choice": "'{input}' is not a valid choice. Valid choices are: to-do, in-progress, review or done"})
+    priority = serializers.ChoiceField(choices=priority, error_messages={"invalid_choice": "'{input}' is not a valid choice. Valid choices are: low, medium or high"})
+    comments_count = serializers.SerializerMethodField()
+
+
+    class Meta:
+        model = Task
+        fields = ["id", "board", "title", "description", "status", "priority", "assignee", "reviewer", "due_date", "comments_count"]
+
+
+    def get_comments_count(self, obj):
+        return 0
