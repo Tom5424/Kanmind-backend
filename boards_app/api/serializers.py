@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from boards_app.models import Board
-from tasks_app.api.serializers import TaskCreateListSerializer
+from tasks_app.api.serializers import TaskListSerializer
 
 
 class BoardCreateSerializer(serializers.ModelSerializer):
@@ -90,7 +90,7 @@ class BoardMemberListSerializer(serializers.ModelSerializer):
 class BoardDetailSerializer(serializers.ModelSerializer):
     owner_id = serializers.PrimaryKeyRelatedField(read_only=True)
     members = BoardMemberListSerializer(many=True)
-    tasks = TaskCreateListSerializer(many=True)
+    tasks = TaskListSerializer(many=True)
 
 
     class Meta:
