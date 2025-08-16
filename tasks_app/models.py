@@ -14,6 +14,7 @@ class Task(models.Model):
     assignee_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned")
     reviewer_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewer")
     due_date = models.DateField(default=timezone.now)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="creator")
 
 
     def __str__(self):

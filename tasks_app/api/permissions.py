@@ -22,3 +22,12 @@ class IsBoardOwnerOrMember(BasePermission):
         if request.method in ['PATCH', 'PUT', 'DELETE']:
             board = obj.board
             return board.owner_id_id == request.user.id or request.user in board.members.all()
+
+
+class IsBoardOwnerOrTaskCreator(BasePermission):
+    
+
+    def has_object_permission(self, request, view, obj):
+        board = obj.board
+        creator_id = obj.creator_id
+        return board.owner_id_id == request.user.id or request.user.id == creator_id

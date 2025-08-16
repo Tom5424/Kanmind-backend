@@ -41,12 +41,13 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     assignee_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True, required=False, allow_null=True)
     status = serializers.ChoiceField(choices=status, error_messages={"invalid_choice": "'{input}' is not a valid choice. Valid choices are: to-do, in-progress, review or done"})
     priority = serializers.ChoiceField(choices=priority, error_messages={"invalid_choice": "'{input}' is not a valid choice. Valid choices are: low, medium or high"})
+    creator = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True)
     comments_count = serializers.SerializerMethodField()
 
 
     class Meta:
         model = Task
-        fields = ["id", "board", "title", "description", "status", "priority", "assignee", "assignee_id", "reviewer", "reviewer_id", "due_date", "comments_count"]
+        fields = ["id", "board", "title", "description", "status", "priority", "assignee", "assignee_id", "reviewer", "reviewer_id", "due_date", "creator", "comments_count"]
 
 
     def get_comments_count(self, obj):
@@ -56,12 +57,13 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         assignee = validated_data.pop('assignee_id', None)
         reviewer = validated_data.pop('reviewer_id', None)
+        creator = validated_data.pop('creator', None)
         board = validated_data.pop('board')
         if assignee and assignee not in board.members.all():
             assignee = None
         if reviewer and reviewer not in board.members.all():
             reviewer = None
-        task = Task.objects.create(board=board, assignee_id=assignee, reviewer_id=reviewer, **validated_data)
+        task = Task.objects.create(board=board, assignee_id=assignee, reviewer_id=reviewer, creator=creator, **validated_data)
         return task
 
 
