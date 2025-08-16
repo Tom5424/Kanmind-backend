@@ -31,7 +31,7 @@ class BoardCreateSerializer(serializers.ModelSerializer):
         
 
     def get_tasks_high_prio_count(self, obj):
-        return obj.tasks.filter(status="high").count()
+        return obj.tasks.filter(priority="high").count()
 
 
     def create(self, validated_data):
@@ -50,7 +50,6 @@ class BoardListSerializer(serializers.ModelSerializer):
     ticket_count = serializers.SerializerMethodField()
     tasks_to_do_count = serializers.SerializerMethodField()
     tasks_high_prio_count = serializers.SerializerMethodField()
-    ### Must Check the task, if can they exist
 
 
     class Meta:
@@ -103,7 +102,6 @@ class BoardUpdateSerializer(serializers.ModelSerializer):
     members = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True, many=True, error_messages={"does_not_exist": "1 or more users dont exist!"})
     owner_data = BoardMemberListSerializer(source="owner_id", read_only=True)
     members_data = BoardMemberListSerializer(source="members", many=True, read_only=True)
-    ### Must Check the task, if can they exist
 
 
     class Meta:
