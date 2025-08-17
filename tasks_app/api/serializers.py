@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from tasks_app.models import Task
+from tasks_app.models import Task, Comment 
 from boards_app.models import Board
 from tasks_app.choices import priority, status
 
@@ -101,6 +101,24 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
         instance.due_date = validated_data.get("due_date", instance.due_date)
         instance.save()
         return instance
+
+
+class TaskCreateCommentSerializer(serializers.ModelSerializer):
+    created_at = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+
+
+    class Meta:
+        model = Comment
+        fields = ["id", "created_at", "author", "content"]
+
+
+    def get_created_at(self, obj):
+        return obj.created_at.date()
+
+
+    def get_author(self, obj):
+        return obj.author.customuser.fullname
 
 
 class TaskAssignedOrReviewingListSerializer(serializers.ModelSerializer):

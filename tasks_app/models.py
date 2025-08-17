@@ -19,3 +19,14 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    content = models.TextField(max_length=200)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="author")
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="comments")
+    created_at = models.DateField(default=timezone.now)
+
+
+    def __str__(self):
+        return f"Comment from {self.author}"
