@@ -30,7 +30,7 @@ class TaskListSerializer(serializers.ModelSerializer):
 
 
     def get_comments_count(self, obj):
-        return 0
+        return obj.comments.count()
     
 
 class TaskCreateSerializer(serializers.ModelSerializer):
@@ -51,7 +51,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
 
     def get_comments_count(self, obj):
-        return 0
+       return obj.comments.count()
     
 
     def create(self, validated_data):
@@ -136,4 +136,4 @@ class TaskAssignedOrReviewingListSerializer(serializers.ModelSerializer):
 
 
     def get_comments_count(self, obj):
-        return 0
+        return obj.comments.count()
