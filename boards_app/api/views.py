@@ -50,7 +50,7 @@ class BoardDetailView(APIView):
     def patch(self, request, board_id):
         board = get_object_or_404(Board, id=board_id)
         self.check_object_permissions(request=request, obj=board)
-        serializer = BoardUpdateSerializer(board, data=request.data)
+        serializer = BoardUpdateSerializer(board, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_200_OK)

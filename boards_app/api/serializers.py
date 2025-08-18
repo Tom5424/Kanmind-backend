@@ -119,7 +119,8 @@ class BoardUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         members = validated_data.get("members", instance.members)
-        if members is not None:
+        if "members" in validated_data:
+            members = validated_data["members"]
             instance.members.set(members)
         instance.save()
         return instance
