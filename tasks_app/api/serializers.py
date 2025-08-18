@@ -103,7 +103,7 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
-class TaskCreateCommentSerializer(serializers.ModelSerializer):
+class CommentCreateListSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
 
@@ -114,7 +114,7 @@ class TaskCreateCommentSerializer(serializers.ModelSerializer):
 
 
     def get_created_at(self, obj):
-        return obj.created_at.date()
+        return obj.created_at
 
 
     def get_author(self, obj):

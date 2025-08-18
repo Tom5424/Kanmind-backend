@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from django.shortcuts import get_object_or_404
-from .serializers import TaskCreateSerializer, TaskUpdateSerializer, TaskAssignedOrReviewingListSerializer, TaskCreateCommentSerializer 
+from .serializers import TaskCreateSerializer, TaskUpdateSerializer, TaskAssignedOrReviewingListSerializer, CommentCreateListSerializer 
 from .permissions import IsBoardOwnerOrMember, IsBoardOwnerOrTaskCreator
 from tasks_app.models import Task
 
@@ -43,16 +43,24 @@ class TaskCreateUpdateDeleteView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TaskCreateCommentView(APIView):
+class CommentCreateListView(APIView):
     permission_classes = [IsAuthenticated, IsBoardOwnerOrMember]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
+
+
+    def get(self, request, task_id):
+        task = get_object_or_404(Task, id=task_id)
+        comments = task.comments.order_by("created_at")
+        self.check_object_permissions(request=request, obj=task)
+        serializer = CommentCreateListSerializer(comments, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
     def post(self, request, task_id):
         user = request.user
         task = get_object_or_404(Task, id=task_id)
         self.check_object_permissions(request=request, obj=task)
-        serializer = TaskCreateCommentSerializer(data=request.data)
+        serializer = CommentCreateListSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(author=user, task=task)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
