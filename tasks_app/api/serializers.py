@@ -41,7 +41,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     assignee_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True, required=False, allow_null=True)
     status = serializers.ChoiceField(choices=status, error_messages={"invalid_choice": "'{input}' is not a valid choice. Valid choices are: to-do, in-progress, review or done"})
     priority = serializers.ChoiceField(choices=priority, error_messages={"invalid_choice": "'{input}' is not a valid choice. Valid choices are: low, medium or high"})
-    creator = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True)
+    creator = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True, required=False)
     comments_count = serializers.SerializerMethodField()
 
 
@@ -55,9 +55,9 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     
 
     def create(self, validated_data):
+        creator = self.context.get("request").user
         assignee = validated_data.pop('assignee_id', None)
         reviewer = validated_data.pop('reviewer_id', None)
-        creator = validated_data.pop('creator', None)
         board = validated_data.pop('board')
         if assignee and assignee not in board.members.all():
             assignee = None

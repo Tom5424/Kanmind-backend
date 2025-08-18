@@ -21,7 +21,7 @@ class TaskCreateUpdateDeleteView(APIView):
 
 
     def post(self, request):
-        serializer = TaskCreateSerializer(data=request.data)
+        serializer = TaskCreateSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
