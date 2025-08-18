@@ -18,9 +18,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from .redirect import redirect_to_admin_panel
 
 
 urlpatterns = [
+    path('', redirect_to_admin_panel),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include('register_app.api.urls')),
