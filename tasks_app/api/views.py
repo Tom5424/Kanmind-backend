@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from django.shortcuts import get_object_or_404
 from .serializers import TaskCreateSerializer, TaskUpdateSerializer, TaskAssignedOrReviewingListSerializer, CommentCreateListSerializer 
-from .permissions import IsBoardOwnerOrMember, IsBoardOwnerOrTaskCreator
-from tasks_app.models import Task
+from .permissions import IsBoardOwnerOrMember, IsBoardOwnerOrTaskCreator, IsCommentCreator
+from tasks_app.models import Task, Comment
 
 
 class TaskCreateUpdateDeleteView(APIView):
@@ -64,6 +64,19 @@ class CommentCreateListView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(author=user, task=task)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CommentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, IsCommentCreator]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+
+
+    def delete(self, request, task_id, comment_id):
+        get_object_or_404(Task, id=task_id)
+        comment = get_object_or_404(Comment, id=comment_id)
+        self.check_object_permissions(request=request, obj=comment)
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TaskAssignedToMeListView(APIView):
