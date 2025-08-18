@@ -70,7 +70,7 @@ The Kanmind backend is a robust REST API built with Django and Django REST Frame
 - METHOD POST ``` api/login/ ``` Login a user
 
 
-####Board Enpoints:
+#### Board Enpoints:
 
 
  - METHOD GET, POST ``` api/boards/ ``` Return a list of boards or creats a new board
