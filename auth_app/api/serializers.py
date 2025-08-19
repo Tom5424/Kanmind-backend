@@ -1,7 +1,8 @@
 import re
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User 
 from rest_framework import serializers
-from register_app.models import CustomUser
+from auth_app.models import CustomUser
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -48,3 +49,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         CustomUser.objects.create(user=user, fullname=fullname)
         return user
+    
+
+class CustomEmailAuthTokenSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError(detail='Invalid input the entered email or password is wrong!')
+        user = authenticate(username=user.username, password=password)
+        if not user:
+            raise serializers.ValidationError(detail='Invalid input the entered email or password is wrong!')
+        attrs['user'] = user
+        return attrs

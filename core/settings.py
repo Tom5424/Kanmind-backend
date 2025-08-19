@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'register_app',
+    'auth_app',
     'boards_app',
     'check_email_app',
     'tasks_app',
