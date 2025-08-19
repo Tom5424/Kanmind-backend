@@ -6,9 +6,11 @@ from .serializers import RegisterSerializer
 
 
 class RegisterView(APIView):
-
+   """Create a new user."""
+   
 
    def post(self, request):
+      """Create a new user."""
       serializer = RegisterSerializer(data=request.data)
       serializer.is_valid(raise_exception=True)
       user = serializer.save()

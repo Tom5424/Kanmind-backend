@@ -11,11 +11,15 @@ from .serializers import UserEmailAndFullnameSerializer
 
 
 class EmailCheckView(APIView):
+    """Check if a user's email exists and return basic info."""
+
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
 
 
     def get(self, request):
+        """Validate an email and return user data."""
         email = request.query_params.get("email")
         if not email:
             raise ValidationError({"email": "The email is missing!"})

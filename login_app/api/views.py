@@ -7,10 +7,14 @@ from .serializers import CustomEmailAuthTokenSerializer
 
 
 class LoginView(ObtainAuthToken):
+    """Register an existing user."""
+
+
     serializer_class = CustomEmailAuthTokenSerializer
 
 
     def post(self, request):
+        """Register an existing user."""
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']

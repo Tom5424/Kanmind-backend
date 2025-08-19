@@ -11,11 +11,15 @@ from boards_app.models import Board
 
 
 class BoardListCreateView(APIView):
+    """List all boards of a user or create a new board."""
+
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
 
 
     def get(self, request):
+        """Get a list of boards for the authenticated user."""
         user = request.user
         boards = Board.objects.filter(Q(owner_id=user.id) | Q(members=user)).distinct()
         serializer = BoardListSerializer(boards, many=True)
@@ -23,6 +27,7 @@ class BoardListCreateView(APIView):
 
 
     def post(self, request):
+        """Create a new board."""
         serializer = BoardCreateSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -30,17 +35,22 @@ class BoardListCreateView(APIView):
     
 
 class BoardDetailView(APIView):
+    """Get, update, or delete a specific board."""
+
+
     permission_classes = [IsAuthenticated, IsBoardOwnerOrMember, IsBoardOwner]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
 
 
     def get_permissions(self):
+        """Return the appropriate permission classes based on request method."""
         if self.request.method == "DELETE":
             return [IsAuthenticated(), IsBoardOwner()]
         return [IsAuthenticated(), IsBoardOwnerOrMember()]
 
 
     def get(self, request, board_id):
+        """Get details of a specific board."""
         board = get_object_or_404(Board, id=board_id)
         self.check_object_permissions(request=request, obj=board)
         serializer = BoardDetailSerializer(board)
@@ -48,6 +58,7 @@ class BoardDetailView(APIView):
     
 
     def patch(self, request, board_id):
+        """Partially update a specific board."""
         board = get_object_or_404(Board, id=board_id)
         self.check_object_permissions(request=request, obj=board)
         serializer = BoardUpdateSerializer(board, data=request.data, partial=True)
@@ -57,6 +68,7 @@ class BoardDetailView(APIView):
 
 
     def delete(self, request, board_id):
+        """Delete a specific board."""
         board = get_object_or_404(Board, id=board_id)
         self.check_object_permissions(request=request, obj=board)
         board.delete()
